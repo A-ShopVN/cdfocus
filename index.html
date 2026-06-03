@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CDFocus - Không Gian Kỷ Luật</title>
+    <title>PomoRoom - Không Gian Kỷ Luật</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -76,9 +76,31 @@
 </head>
 <body class="text-ios-text h-screen overflow-hidden flex flex-col selection:bg-blue-200">
 
+    <!-- ================= HỆ THỐNG CHỐNG PHÁ CODE ================= -->
+    <script>
+        // 1. Chặn chuột phải
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // 2. Chặn các phím tắt DevTools
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; // F12
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; // Ctrl+Shift+I
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; // Ctrl+Shift+J
+            if(e.ctrlKey && e.keyCode == 85) return false; // Ctrl+U
+        };
+
+        // 3. Vòng lặp đóng băng (Debugger Trap)
+        setInterval(function() {
+            const tr = function() { return false; };
+            try {
+                tr['constructor']('debugger')();
+            } catch (err) {}
+        }, 2000);
+    </script>
+
     <!-- ================= MODAL SYSTEM ================= -->
-    <div id="custom-modal" class="hidden fixed inset-0 z-[999] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
+    <div id="custom-modal" class="hidden fixed inset-0 z-[99999] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="if(!window.isModalLocked) closeModal()"></div>
         <div class="bg-white rounded-[24px] p-6 w-full max-w-sm z-10 shadow-2xl animate-slide-up text-center relative">
             <div id="modal-icon" class="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-blue-50 text-blue-500 text-2xl">
                 <i class="fa-solid fa-bell"></i>
@@ -93,7 +115,7 @@
     </div>
 
     <!-- Custom Prompt Modal -->
-    <div id="prompt-modal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4">
+    <div id="prompt-modal" class="hidden fixed inset-0 z-[99999] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closePromptModal()"></div>
         <div class="bg-white rounded-[24px] p-6 w-full max-w-sm z-10 shadow-2xl animate-slide-up relative">
             <h3 id="prompt-title" class="text-xl font-bold mb-2 text-center">Nhập thông tin</h3>
@@ -129,7 +151,7 @@
                     <i class="fa-solid fa-clock text-white text-2xl"></i>
                 </div>
                 <h1 id="auth-title" class="text-3xl font-bold mb-2 tracking-tight">Đăng nhập</h1>
-                <p id="auth-subtitle" class="text-gray-500 text-sm">Chào mừng bạn đến với CDFocus.</p>
+                <p id="auth-subtitle" class="text-gray-500 text-sm">Chào mừng bạn đến với PomoRoom.</p>
             </div>
 
             <!-- Form Đăng Nhập -->
@@ -204,7 +226,7 @@
             <div class="ios-card h-full flex flex-col overflow-hidden">
                 <div class="p-8 flex items-center gap-3">
                     <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center shadow-md"><i class="fa-solid fa-clock text-white"></i></div>
-                    <span class="font-bold text-2xl tracking-tight">CDFocus</span>
+                    <span class="font-bold text-2xl tracking-tight">PomoRoom</span>
                 </div>
                 <nav class="flex-1 px-4 space-y-2 mt-2">
                     <button onclick="switchTab('room')" id="nav-room" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition font-semibold bg-black text-white shadow-md">
@@ -321,7 +343,7 @@
                     </div>
                 </div>
 
-                <!-- Tab ADMIN PANEL (MỚI) -->
+                <!-- Tab ADMIN PANEL -->
                 <div id="tab-admin" class="tab-content hidden absolute inset-0 p-6 md:p-10 overflow-y-auto animate-fade-in bg-ios-bg md:bg-white rounded-[32px]">
                     <div class="max-w-4xl mx-auto pb-24 md:pb-0">
                         <div class="flex flex-col md:flex-row justify-between items-center mb-10 mt-4 gap-4">
@@ -347,7 +369,6 @@
                         <h2 class="text-3xl font-bold mb-4">Cài Đặt</h2>
                         
                         <div class="p-8 bg-gray-50 rounded-[32px] border border-gray-100">
-                            <!-- Fix tràn viền trên Mobile ở đây -->
                             <div class="flex flex-col md:flex-row items-center md:items-start gap-6 mb-6 overflow-hidden">
                                 <img id="settings-avatar" src="" class="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover flex-shrink-0">
                                 <div class="min-w-0 flex-1 text-center md:text-left w-full">
@@ -363,6 +384,15 @@
                                         <button onclick="saveProfile()" class="px-6 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">Lưu</button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- BANNER MẬT KHẨU TẠM THỜI -->
+                        <div id="temp-password-banner" class="hidden p-6 bg-yellow-50 rounded-[32px] border border-yellow-200">
+                            <h3 class="text-xl font-bold text-yellow-700 mb-2"><i class="fa-solid fa-shield-halved"></i> Mật khẩu an toàn tạm thời</h3>
+                            <p class="text-sm text-yellow-600 mb-4">Hệ thống đã tự động đổi mật khẩu để bảo vệ bạn khỏi thiết bị lạ. Đây là mật khẩu hiện tại, hãy dùng nó làm "Mật khẩu cũ" để thiết lập mật khẩu mới (Đã được điền sẵn bên dưới).</p>
+                            <div class="bg-white p-4 rounded-2xl font-mono text-2xl font-black text-center tracking-widest text-yellow-800 border border-yellow-300 shadow-inner select-all">
+                                <span id="display-temp-pwd"></span>
                             </div>
                         </div>
 
@@ -411,7 +441,7 @@
         </div>
     </div>
 
-    <!-- Custom Save Room Modal with Smooth Dropdown -->
+    <!-- Custom Save Room Modal -->
     <div id="save-room-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeSaveModal()"></div>
         <div class="bg-white rounded-[32px] p-8 w-full max-w-md z-10 shadow-2xl animate-slide-up relative overflow-visible">
@@ -419,17 +449,14 @@
             <p class="text-gray-500 text-sm mb-6">Bạn muốn lưu thành quả này vào thư mục nào?</p>
             
             <div class="space-y-4">
-                <!-- Custom UI Dropdown -->
                 <div class="relative w-full z-[120]">
                     <div id="custom-select-display" onclick="toggleCustomSelect()" class="w-full px-5 py-4 ios-input font-medium cursor-pointer flex justify-between items-center bg-gray-50 border border-gray-200 hover:bg-white transition">
                         <span id="custom-select-text" class="truncate">-- Chọn thư mục --</span>
                         <i class="fa-solid fa-chevron-down transition-transform duration-200" id="custom-select-icon"></i>
                     </div>
                     <div id="custom-select-options" class="hidden absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl max-h-60 overflow-y-auto transform origin-top custom-dropdown-content opacity-0 scale-95 custom-scrollbar">
-                        <!-- Render bằng JS -->
                     </div>
                 </div>
-
                 <button onclick="requestCreateFolder(null, true)" class="w-full py-3 text-blue-500 font-bold hover:bg-blue-50 rounded-xl transition">
                     + Tạo thư mục gốc mới
                 </button>
@@ -444,7 +471,6 @@
 
     <!-- ================= CINEMA VIEW ================= -->
     <div id="cinema-view" class="hidden fixed inset-0 z-[100] bg-[#050505] text-white flex flex-col font-sans">
-        
         <!-- Break Lock Overlay -->
         <div id="break-overlay" class="hidden absolute inset-0 bg-white/95 backdrop-blur-3xl z-[200] flex flex-col items-center justify-center text-black pointer-events-auto">
             <div class="bg-white p-10 rounded-[40px] shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 border border-gray-100 text-center animate-bounce-slow">
@@ -483,7 +509,6 @@
                 <div id="video-container" class="w-full h-full"></div>
             </div>
 
-            <!-- Vùng thả Emoji -->
             <div id="emoji-container" class="absolute inset-0 pointer-events-none overflow-hidden z-20"></div>
 
             <button onclick="toggleParticipants()" class="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition z-10">
@@ -541,11 +566,7 @@
         let localFolders = [];
         let localRooms = [];
         
-        let roomState = {
-            id: null,
-            name: "",
-            youtubeUrl: ""
-        };
+        let roomState = { id: null, name: "", youtubeUrl: "" };
         let selectedCustomFolderId = "";
 
         const FOCUS_TIME = 45 * 60; 
@@ -558,7 +579,6 @@
 
         const ADMIN_EMAIL = "dangcanh13102008@gmail.com";
 
-        // ID Phiên làm việc hiện tại của tab này (Dùng cho bảo mật đa thiết bị)
         const mySessionId = Math.random().toString(36).substring(2, 15);
         let sessionUnsubscribe = null;
 
@@ -568,7 +588,7 @@
 
         window.customAlert = (title, message, type = 'info') => {
             document.getElementById('modal-title').textContent = title;
-            // Dùng innerHTML để render giao diện text mật khẩu
+            // Dùng innerHTML để cho phép render HTML bên trong message
             document.getElementById('modal-message').innerHTML = message;
             document.getElementById('modal-btn-cancel').classList.add('hidden');
             document.getElementById('modal-btn-ok').textContent = 'Đã hiểu';
@@ -584,7 +604,7 @@
 
         window.customConfirm = (title, message, onConfirm, onCancel = null, okText = 'Xác nhận', cancelText = 'Hủy') => {
             document.getElementById('modal-title').textContent = title;
-            // Dùng innerHTML để render form báo IP và Thiết bị
+            // Dùng innerHTML để cho phép render HTML bên trong message (Cực kỳ quan trọng cho cảnh báo bảo mật)
             document.getElementById('modal-message').innerHTML = message;
             
             const btnCancel = document.getElementById('modal-btn-cancel');
@@ -614,7 +634,7 @@
 
         // --- CUSTOM PROMPT SYSTEM ---
         let promptCallback = null;
-        window.customPrompt = (title, placeholder, onConfirm) => {
+        function customPrompt(title, placeholder, onConfirm) {
             document.getElementById('prompt-title').textContent = title;
             const input = document.getElementById('prompt-input');
             input.placeholder = placeholder;
@@ -622,8 +642,14 @@
             promptCallback = onConfirm;
             document.getElementById('prompt-modal').classList.remove('hidden');
             setTimeout(() => input.focus(), 100);
-        };
-        window.closePromptModal = () => document.getElementById('prompt-modal').classList.add('hidden');
+        }
+        window.customPrompt = customPrompt;
+
+        function closePromptModal() {
+            document.getElementById('prompt-modal').classList.add('hidden');
+        }
+        window.closePromptModal = closePromptModal;
+
         document.getElementById('prompt-btn-ok').addEventListener('click', () => {
             const val = document.getElementById('prompt-input').value.trim();
             closePromptModal();
@@ -646,7 +672,7 @@
             
             const title = document.getElementById('auth-title');
             const sub = document.getElementById('auth-subtitle');
-            if(type === 'login') { title.textContent = "Đăng nhập"; sub.textContent = "Chào mừng bạn đến với CDFocus."; }
+            if(type === 'login') { title.textContent = "Đăng nhập"; sub.textContent = "Chào mừng bạn đến với PomoRoom."; }
             else if (type === 'register') { title.textContent = "Tạo tài khoản"; sub.textContent = "Bắt đầu hành trình kỷ luật của bạn."; }
             else { title.textContent = "Khôi phục mật khẩu"; sub.textContent = "Đừng lo, chúng tôi sẽ giúp bạn."; }
         };
@@ -686,7 +712,6 @@
         // --- FIREBASE AUTHENTICATION & SECURITY LOGIC ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Kiểm tra xem có bị khóa tài khoản không (Trừ Admin ra)
                 if (user.email !== ADMIN_EMAIL) {
                     try {
                         const metaRef = doc(db, 'users_meta', user.uid);
@@ -705,7 +730,6 @@
                 const name = user.displayName || user.email.split('@')[0];
                 const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff`;
                 
-                // Cập nhật thông tin vào users_meta để Admin quản lý
                 try {
                     await setDoc(doc(db, 'users_meta', user.uid), {
                         email: user.email,
@@ -714,11 +738,8 @@
                         uid: user.uid,
                         lastLogin: serverTimestamp()
                     }, { merge: true });
-                } catch (e) {
-                    console.error("Lỗi cập nhật meta:", e);
-                }
+                } catch (e) { console.error(e); }
 
-                // Hiển thị nút Admin nếu đúng email
                 if (user.email === ADMIN_EMAIL) {
                     document.getElementById('nav-admin').classList.remove('hidden');
                     document.getElementById('mobile-nav-admin').classList.remove('hidden');
@@ -740,23 +761,22 @@
                 
                 fetchFoldersAndRooms(); 
                 checkStrictBreakRecovery();
+                checkTempPasswordUI(); 
                 
-                // Khôi phục phòng học nếu F5 (chống văng ra ngoài)
                 const savedRoomState = sessionStorage.getItem('activeRoomState');
                 if (savedRoomState && !isBreakMode) {
                     roomState = JSON.parse(savedRoomState);
                     document.getElementById('room-name-input').value = roomState.name;
                     document.getElementById('youtube-link-input').value = roomState.youtubeUrl;
                     document.getElementById('existing-room-id').value = roomState.id;
-                    enterCinemaRoom(false); // Gọi không ghi đè lại
+                    enterCinemaRoom(false); 
                 }
 
-                // Kích hoạt giám sát bảo mật
                 setupSecurityListener(user);
 
             } else {
                 currentUser = null;
-                if(sessionUnsubscribe) sessionUnsubscribe(); // Hủy nghe khi đăng xuất
+                if(sessionUnsubscribe) sessionUnsubscribe(); 
                 document.getElementById('dashboard-view').classList.add('hidden');
                 document.getElementById('auth-view').classList.remove('hidden');
             }
@@ -827,23 +847,55 @@
 
         function generateStrongPassword() {
             const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-            let pwd = "A1@"; // Đảm bảo luôn có hoa, số, đặc biệt
+            let pwd = "A1@"; 
             for(let i=0; i<9; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length));
             return pwd;
         }
 
+        window.checkTempPasswordUI = () => {
+            const tempPwd = localStorage.getItem('tempPomoPassword');
+            const banner = document.getElementById('temp-password-banner');
+            const display = document.getElementById('display-temp-pwd');
+            
+            if (banner && display) {
+                if (tempPwd) {
+                    display.textContent = tempPwd;
+                    banner.classList.remove('hidden');
+                    document.getElementById('setting-old-pwd').value = tempPwd;
+                } else {
+                    banner.classList.add('hidden');
+                    display.textContent = '';
+                }
+            }
+        };
+
         async function setupSecurityListener(user) {
             const sessionRef = doc(db, 'users', user.uid, 'session_control', 'info');
             
-            // 1. Lấy thông tin IP 
             let myIp = "Đang quét...";
+            let myLocation = "Không xác định";
+            
+            // 1. Quét vị trí qua IP (Thử 2 API khác nhau để chống lỗi chặn)
             try {
-                const res = await fetch('https://api.ipify.org?format=json');
+                const res = await fetch('https://ipapi.co/json/');
                 const data = await res.json();
-                myIp = data.ip;
-            } catch(e) { myIp = "Không xác định"; }
+                if(data.ip) myIp = data.ip;
+                if(data.city && data.country_name) {
+                    myLocation = `${data.city}, ${data.region}, ${data.country_name}`;
+                } else { throw new Error("No data"); }
+            } catch(e) { 
+                try {
+                    const res2 = await fetch('https://freeipapi.com/api/json');
+                    const data2 = await res2.json();
+                    if(data2.ipAddress) myIp = data2.ipAddress;
+                    if(data2.cityName && data2.countryName) {
+                        myLocation = `${data2.cityName}, ${data2.regionName}, ${data2.countryName}`;
+                    }
+                } catch(err) {
+                    myIp = "Không xác định"; 
+                }
+            }
 
-            // 2. Lấy thông tin Thiết bị
             const ua = navigator.userAgent;
             let deviceStr = "Thiết bị lạ";
             if(/windows/i.test(ua)) deviceStr = "Windows PC";
@@ -858,10 +910,12 @@
                     lastActive: serverTimestamp(),
                     kickSignal: null,
                     lastIp: myIp,
+                    lastLocation: myLocation,
                     lastDevice: deviceStr
                 }, { merge: true });
-            } catch(e) { console.error("Lỗi cấp quyền Security Listener:", e); }
+            } catch(e) { console.error(e); }
 
+            // 3. Lắng nghe đăng nhập lạ
             sessionUnsubscribe = onSnapshot(sessionRef, async (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -875,41 +929,43 @@
                     if (data.activeSessionId && data.activeSessionId !== mySessionId) {
                         const intruderId = data.activeSessionId;
                         const intruderIp = data.lastIp || "Không xác định";
+                        const intruderLocation = data.lastLocation || "Không xác định"; 
                         const intruderDevice = data.lastDevice || "Không xác định";
                         
-                        // Form cảnh báo kèm IP và Thiết bị
                         const confirmMsg = `
                             <p class="mb-3 text-sm text-gray-500">Phát hiện thiết bị lạ vừa đăng nhập vào tài khoản của bạn:</p>
-                            <div class="bg-gray-50 p-4 rounded-[20px] border border-gray-200 text-left mb-4 shadow-inner">
-                                <span class="text-[10px] text-gray-400 block uppercase font-black tracking-wider">Địa chỉ IP</span>
-                                <span class="font-bold text-gray-900 text-base block mb-2">${intruderIp}</span>
-                                <span class="text-[10px] text-gray-400 block uppercase font-black tracking-wider">Hệ điều hành / Thiết bị</span>
-                                <span class="font-bold text-gray-900 text-base">${intruderDevice}</span>
+                            <div class="bg-gray-50 p-4 rounded-[20px] border border-gray-200 text-left mb-4 shadow-inner space-y-3">
+                                <div>
+                                    <span class="text-[10px] text-gray-400 block uppercase font-black tracking-wider">Địa chỉ IP</span>
+                                    <span class="font-bold text-gray-900 text-sm block">${intruderIp}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-gray-400 block uppercase font-black tracking-wider">Vị trí (Dự đoán)</span>
+                                    <span class="font-bold text-red-600 text-sm block"><i class="fa-solid fa-location-dot"></i> ${intruderLocation}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-gray-400 block uppercase font-black tracking-wider">Hệ điều hành / Thiết bị</span>
+                                    <span class="font-bold text-gray-900 text-sm">${intruderDevice}</span>
+                                </div>
                             </div>
                             <p class="font-bold text-red-500">Đó có phải là bạn không?</p>
                         `;
                         
-                        customConfirm('Cảnh báo Bảo mật!', 
-                            confirmMsg, 
+                        customConfirm('Cảnh báo Bảo mật!', confirmMsg, 
                             () => { console.log("User xác nhận an toàn."); }, 
                             async () => {
                                 try {
-                                    // Bắn tín hiệu Kick
                                     await setDoc(sessionRef, { kickSignal: intruderId, activeSessionId: mySessionId }, { merge: true });
-                                    
-                                    // Tạo mật khẩu và đổi ngay lập tức
                                     const newPwd = generateStrongPassword();
                                     await updatePassword(user, newPwd);
                                     
-                                    // Form hiển thị mật khẩu mới (có thể bôi đen để copy)
-                                    const successMsg = `
-                                        <p class="text-sm text-gray-500 mb-2">Kẻ lạ đã bị đá văng. Hệ thống vừa tự động đổi mật khẩu của bạn thành:</p>
-                                        <div class="bg-blue-50 p-4 rounded-2xl font-mono text-xl font-black text-center tracking-widest text-blue-700 select-all border border-blue-200 mt-2 mb-4 cursor-text hover:bg-blue-100 transition" title="Bôi đen để copy">
-                                            ${newPwd}
-                                        </div>
-                                        <p class="text-sm text-red-500 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> BÔI ĐEN ĐỂ COPY & LƯU LẠI NGAY!</p>
-                                    `;
-                                    customAlert('Đã xử lý an toàn!', successMsg, 'success');
+                                    localStorage.setItem('tempPomoPassword', newPwd);
+                                    
+                                    closeModal(); 
+                                    checkTempPasswordUI(); 
+                                    switchTab('settings'); 
+                                    
+                                    customAlert('Đã xử lý an toàn!', 'Kẻ lạ đã bị đá văng. Hệ thống vừa tự động đổi mật khẩu.\n\nHãy xem mật khẩu tạm thời ở mục Cài Đặt và tiến hành đổi lại theo ý bạn.', 'success');
                                 } catch(e) {
                                     if(e.code === 'auth/requires-recent-login') {
                                         customAlert('Đã Kick thiết bị lạ', 'Thiết bị lạ đã bị văng, nhưng bạn cần Đăng xuất và đăng nhập lại ngay lập tức để đổi mật khẩu thủ công!', 'error');
@@ -955,6 +1011,10 @@
                 document.getElementById('setting-old-pwd').value = '';
                 document.getElementById('setting-new-pwd').value = '';
                 document.getElementById('setting-confirm-pwd').value = '';
+                
+                localStorage.removeItem('tempPomoPassword');
+                checkTempPasswordUI();
+                
                 customAlert('Thành công', 'Đã cập nhật mật khẩu thành công.', 'success');
             } catch (e) { 
                 if(e.code === 'auth/invalid-credential') customAlert('Lỗi', 'Mật khẩu cũ không chính xác.', 'error');
@@ -1337,7 +1397,7 @@
                                     <button onclick="requestCreateFolder('${folder.id}'); event.stopPropagation();" class="w-8 h-8 rounded-full text-blue-300 hover:bg-blue-100 hover:text-blue-500 transition flex justify-center items-center" title="Thêm thư mục con">
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
-                                    <button onclick="reqSoftDelete('folder', '${folder.id}', event)" class="w-8 h-8 rounded-full text-red-300 hover:bg-red-100 hover:text-red-500 transition flex justify-center items-center" title="Xóa thư mục">
+                                    <button onclick="reqSoftDelete('folder', '${folder.id}', event)" class="w-8 h-8 rounded-full text-red-300 hover:bg-red-100 hover:text-red-500 transition flex justify-center items-center" title="Chuyển vào thùng rác">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 ` : ''}
@@ -1348,8 +1408,10 @@
                         <div id="folder-content-${folder.id}" class="p-4 space-y-2 transition-all duration-300">
                 `;
                 
+                // Gọi đệ quy cho thư mục con
                 html += buildTreeHTML(folder.id, mode, level + 1);
 
+                // Lấy phòng học thuộc thư mục hiện tại
                 const rooms = localRooms.filter(r => r.folderId === folder.id && !r.isDeleted);
                 
                 if(folders.filter(f => f.parentId === folder.id && !f.isDeleted).length === 0 && rooms.length === 0) {
@@ -1369,7 +1431,7 @@
                                 </div>
                                 ${mode === 'edit' ? `
                                 <div class="absolute right-4 flex items-center gap-2">
-                                    <button onclick="reqSoftDelete('room', '${room.id}', event)" class="w-8 h-8 rounded-full text-red-300 hover:bg-red-100 hover:text-red-500 opacity-0 group-hover:opacity-100 transition flex items-center justify-center z-10">
+                                    <button onclick="reqSoftDelete('room', '${room.id}', event)" class="w-8 h-8 rounded-full text-red-300 hover:bg-red-100 hover:text-red-500 opacity-0 group-hover:opacity-100 transition flex items-center justify-center z-10" title="Chuyển vào thùng rác">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
@@ -1383,8 +1445,11 @@
             return html;
         }
 
-        function renderTree(containerId, mode) {
+        // Định nghĩa renderTree ở đây để hàm renderViews (chạy sau) có thể tìm thấy
+        window.renderTree = function(containerId, mode) {
             const container = document.getElementById(containerId);
+            if (!container) return; // Bảo vệ khi DOM chưa sẵn sàng
+
             const activeRoots = localFolders.filter(f => f.parentId === null && !f.isDeleted);
             
             if(activeRoots.length === 0 && localRooms.filter(r=>!r.isDeleted).length === 0) {
@@ -1459,8 +1524,10 @@
             });
         };
 
-        function renderTrash() {
+        window.renderTrash = function() {
             const container = document.getElementById('trash-list');
+            if (!container) return; // Bảo vệ khi DOM chưa sẵn sàng
+
             const trashFolders = localFolders.filter(f => f.isDeleted);
             const trashRooms = localRooms.filter(r => r.isDeleted);
 
@@ -1508,6 +1575,14 @@
             });
 
             container.innerHTML = html;
+        }
+
+        // Đảm bảo hàm renderViews ở đây để gọi các hàm bên trên
+        window.renderViews = function() {
+            if(!document.getElementById('tab-motivations').classList.contains('hidden')) renderTree('motivations-list', 'view');
+            if(!document.getElementById('tab-edit').classList.contains('hidden')) renderTree('edit-list', 'edit');
+            if(!document.getElementById('tab-trash').classList.contains('hidden')) renderTrash();
+            if(!document.getElementById('tab-admin').classList.contains('hidden')) window.loadAdminData();
         }
 
         // --- ADMIN PANEL LOGIC ---
@@ -1579,7 +1654,7 @@
         };
 
         window.wipeUserData = async (uid) => {
-            customConfirm('Xóa dữ liệu?', 'Bạn có chắc muốn xóa TOÀN BỘ thư mục và phòng học của user này? (Chỉ xóa data, không xóa account đăng nhập)', async () => {
+            customConfirm('Xóa dữ liệu?', 'Bạn có chắc muốn xóa TOÀN BỘ thư mục và phòng học của user này?', async () => {
                 try {
                     const foldersSnap = await getDocs(collection(db, 'users', uid, 'folders'));
                     foldersSnap.forEach(async (d) => { await deleteDoc(d.ref); });
